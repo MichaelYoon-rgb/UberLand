@@ -1,20 +1,46 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { View, StatusBar } from "react-native";
 
-export default function App() {
+import { NavigationContainer } from "@react-navigation/native"
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import {
+    useFonts,
+    Poppins_600SemiBold,
+    Poppins_500Medium,
+    Poppins_700Bold,
+    Poppins_400Regular,
+    Poppins_300Light
+} from "@expo-google-fonts/poppins";
+
+import { HomeScreen } from "./src/features/home/screens/home.screen.js";
+import { screenOptions, option } from "./options.navigation.js";
+
+const Tab = createBottomTabNavigator();
+
+const App = () => {
+
+  let [fontsLoaded] = useFonts({
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_500Medium,
+    Poppins_400Regular,
+    Poppins_300Light
+  });
+  
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1 }}>
+      <NavigationContainer>
+          <StatusBar hidden/>
+          <Tab.Navigator screenOptions={screenOptions}>
+              <Tab.Screen
+                  name="Home"
+                  options={option}
+                  component={HomeScreen}/>
+          </Tab.Navigator>
+      </NavigationContainer>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
