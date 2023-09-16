@@ -10,6 +10,7 @@ export const HomeScreen = ({}) => {
                 region={{latitude: 42.882004, longitude: 74.582748, latitudeDelta: 0.0922, longitudeDelta: 0.0421}}
                 showsUserLocation={true}
             />
+            <Text>Tesstt</Text>
         </View>
     )
 }
