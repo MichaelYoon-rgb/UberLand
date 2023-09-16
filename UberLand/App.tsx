@@ -15,6 +15,8 @@ import {
 
 import { HomeScreen } from "./src/features/home/screens/home.screen.js";
 import { screenOptions, option } from "./options.navigation.js";
+import { LoadingScreen } from "./src/features/loading/screens/loading.screen.js";
+import { colors } from "./theme.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,17 +28,23 @@ const App = () => {
     Poppins_500Medium,
     Poppins_400Regular,
     Poppins_300Light
-  });
+  }); // Loading Fonts To Use
+
+  if (!fontsLoaded) {
+    return <LoadingScreen/>
+  } // Make Sure The Fonts Have Been Loaded
   
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.secondary }}>
       <NavigationContainer>
           <StatusBar hidden/>
           <Tab.Navigator screenOptions={screenOptions}>
+
               <Tab.Screen
                   name="Home"
                   options={option}
-                  component={HomeScreen}/>
+                  component={HomeScreen}/> 
+
           </Tab.Navigator>
       </NavigationContainer>
     </View>
