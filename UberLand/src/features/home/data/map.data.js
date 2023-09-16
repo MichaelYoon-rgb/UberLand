@@ -98,6 +98,9 @@ export const customMapStyle = [
         "stylers": [
             {
                 "color": "#d4dccd"
+            },
+            {
+                "visibility": "on"
             }
         ]
     },
