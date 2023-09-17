@@ -17,6 +17,7 @@ import { HomeScreen } from "./src/features/home/screens/home.screen.js";
 import { screenOptions, option } from "./options.navigation.js";
 import { LoadingScreen } from "./src/features/loading/screens/loading.screen.js";
 import { colors } from "./theme.js";
+import { SettingsScreen } from "./src/features/settings/screens/settings.screen.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,6 +45,16 @@ const App = () => {
                   name="Home"
                   options={option}
                   component={HomeScreen}/> 
+              
+              <Tab.Screen
+                  name="Family"
+                  options={option}
+                  component={HomeScreen}/> 
+              
+              <Tab.Screen
+                  name="Settings"
+                  options={option}
+                  component={SettingsScreen}/> 
 
           </Tab.Navigator>
       </NavigationContainer>

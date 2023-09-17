@@ -1,28 +1,7 @@
 export const customMapStyle = [
     {
-        "featureType": "all",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "visibility": "on"
-            },
-            {
-                "lightness": "80"
-            }
-        ]
-    },
-    {
-        "featureType": "all",
-        "elementType": "geometry.fill",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "all",
-        "elementType": "labels",
+        "featureType": "administrative",
+        "elementType": "all",
         "stylers": [
             {
                 "visibility": "on"
@@ -30,11 +9,20 @@ export const customMapStyle = [
         ]
     },
     {
-        "featureType": "all",
-        "elementType": "labels.icon",
+        "featureType": "administrative.locality",
+        "elementType": "all",
         "stylers": [
             {
                 "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative.neighborhood",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
             }
         ]
     },
@@ -43,48 +31,15 @@ export const customMapStyle = [
         "elementType": "labels.text.fill",
         "stylers": [
             {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.country",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.country",
-        "elementType": "labels",
-        "stylers": [
-            {
-                "visibility": "on"
+                "color": "#444444"
             },
             {
-                "lightness": "68"
+                "lightness": "40"
             }
         ]
     },
     {
-        "featureType": "administrative.country",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "visibility": "off"
-            },
-            {
-                "lightness": "82"
-            },
-            {
-                "hue": "#ff0000"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.country",
+        "featureType": "administrative",
         "elementType": "labels.text.stroke",
         "stylers": [
             {
@@ -97,37 +52,7 @@ export const customMapStyle = [
         "elementType": "all",
         "stylers": [
             {
-                "color": "#d4dccd"
-            },
-            {
-                "visibility": "on"
-            }
-        ]
-    },
-    {
-        "featureType": "landscape",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "landscape.natural",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "visibility": "on"
-            }
-        ]
-    },
-    {
-        "featureType": "landscape.natural.terrain",
-        "elementType": "geometry.stroke",
-        "stylers": [
-            {
-                "visibility": "on"
+                "color": "#f6f6f6"
             }
         ]
     },
@@ -145,19 +70,25 @@ export const customMapStyle = [
         "elementType": "all",
         "stylers": [
             {
-                "saturation": "-100"
+                "saturation": -100
             },
             {
-                "lightness": "32"
-            },
-            {
-                "visibility": "on"
+                "lightness": 45
             }
         ]
     },
     {
         "featureType": "road",
         "elementType": "labels.text",
+        "stylers": [
+            {
+                "lightness": "39"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.text.stroke",
         "stylers": [
             {
                 "visibility": "off"
@@ -167,36 +98,6 @@ export const customMapStyle = [
     {
         "featureType": "road.highway",
         "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "simplified"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "visibility": "on"
-            },
-            {
-                "lightness": "63"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "labels.text",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "labels.icon",
         "stylers": [
             {
                 "visibility": "off"
@@ -222,24 +123,16 @@ export const customMapStyle = [
         ]
     },
     {
-        "featureType": "transit.station",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
         "featureType": "water",
         "elementType": "all",
         "stylers": [
             {
-                "visibility": "on"
+                "color": "#e6e6e6"
             },
             {
-                "color": "#f7fbf4"
+                "visibility": "on"
             }
         ]
-    }
+    },
+    
 ]

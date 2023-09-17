@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "833957707373",
+    "project_id": "uberland-e71b5",
+    "storage_bucket": "uberland-e71b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833957707373:android:2a908c4c3a2337a4dc8964",
+        "android_client_info": {
+          "package_name": "com.ServantsOfEvil.UberLand"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdMpx7-Ja4D6tekx9MfqECeySmopw4vgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
