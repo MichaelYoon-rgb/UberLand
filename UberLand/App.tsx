@@ -53,16 +53,6 @@ const HomeStack = () => {
           options={option}
           component={SecurityScreen}/> 
 
-      <Tab.Screen
-          name="Ratings"
-          options={option}
-          component={RatingScreen}/> 
-      
-      <Tab.Screen
-          name="Settings"
-          options={option}
-          component={SettingsScreen}/> 
-      
     </Tab.Navigator>
   );
 }
