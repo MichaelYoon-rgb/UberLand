@@ -1,22 +1,27 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import Constants from "expo-constants"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import Constants from "expo-constants";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { initializeApp, getApps } from "firebase/app";
+import { getDatabase } from 'firebase/database';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+
+
 const firebaseConfig = {
-  apiKey: Constants.manifest?.extra?.firebaseApiKey,
-  authDomain: Constants.manifest?.extra?.firebaseAuthDomain,
-  projectId: Constants.manifest?.extra?.firebaseProjectId,
-  storageBucket: Constants.manifest?.extra?.firebaseStorageBucket,
-  messagingSenderId: Constants.manifest?.extra?.firebaseMessagingSenderId,
-  appId: Constants.manifest?.extra?.firebaseAppId,
+  apiKey: Constants.expoConfig?.extra?.firebaseApiKey,
+  authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain,
+  projectId: Constants.expoConfig?.extra?.firebaseProjectId,
+  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket,
+  messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId,
+  appId: Constants.expoConfig?.extra?.firebaseAppId,
+  databaseURL: Constants.expoConfig?.extra?.databaseURL
 };
 
+let app = (getApps().length < 1) ? initializeApp(firebaseConfig) : getApps();
+let db = getDatabase();
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
+
+export { db };
+export default { app };
