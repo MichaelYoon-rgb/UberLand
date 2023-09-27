@@ -17,7 +17,7 @@ import { RoutesContext } from "../../../services/routes/routes.context";
 import { ProfileContext } from "../../../services/profile/profile.context";
 import { FamilyContext } from "../../../services/family/family.context";
 import { LoginContext } from "../../../services/login/login.context";
-console.log("HELLLOOOO ITSSS WORRKINNGGG ")
+
 const calculateDistance = (coord1, coord2) => {
     lat1 = coord1.latitude
     lon1 = coord1.longitude
