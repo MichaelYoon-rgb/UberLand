@@ -91,7 +91,6 @@ export const HomeScreen = ({}) => {
     if (speedAlert) return <AlertComponent/>
     return (
         <View style={styles.container}>
-            <Text style={{zIndex: 100}}>{user.uid}</Text>
             <MapView style={styles.mapView}
                 region={location}
                 showsMyLocationButton={false}
