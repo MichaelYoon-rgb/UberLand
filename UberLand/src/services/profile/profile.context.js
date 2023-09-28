@@ -13,7 +13,7 @@ import { LoginContext } from '../login/login.context';
 export const ProfileContext = createContext();
 
 export const ProfileContextProvider = ({children}) => {
-    const [profile, setProfile] = useState([]);
+    const [profile, setProfile] = useState({});
     const [drivers, setDrivers] = useState([]);
     const { user, initializing } = useContext(LoginContext);
     const [requesting, setRequesting] = useState(true);
@@ -21,7 +21,8 @@ export const ProfileContextProvider = ({children}) => {
     const loadProfile = () => {
         try {
             onValue(ref(db, `/Profile/${user.uid}`), querySnapShot => {
-                let data = querySnapShot.val() || [];
+                let data = querySnapShot.val() || {};
+
                 setProfile(data)
                 setRequesting(false)
             });
@@ -49,35 +50,35 @@ export const ProfileContextProvider = ({children}) => {
 
     const getDriversProfile = async () => {
         onValue(ref(db, `/Profile/`), querySnapShot => {
+            
             let data = querySnapShot.val() || [];
-            let temp = drivers
+            let temp = []
             for (const [key, value] of Object.entries(data)) {
                 if (value.profile == "driver" && value.location != false){
                     temp.push({location: value.location, uid: key})
                 }
             }
+
             setDrivers(temp)
         });
     }
 
+
+
     const updateLocation = async (location) => {
-        if (profile.profile == "driver"){
-            set(ref(db, `/Profile/${user.uid}/location`), {latitude: location.latitude, longitude: location.longitude});
-        }
+        set(ref(db, `/Profile/${user.uid}/location`), {latitude: location.latitude, longitude: location.longitude});
     }
 
     const removeLocation = async () => {
-        if (profile.profile == "driver"){
-            set(ref(db, `/Profile/${user.uid}/location`), false);
-        }
+        set(ref(db, `/Profile/${user.uid}/location`), false);
     }
 
     useEffect(() => {
-        if (initializing === false && user !== undefined){
+        if (user !== undefined){
             loadProfile();
             getDriversProfile();
         }
-    }, [initializing, user]);
+    }, [user]);
 
     return (
         <ProfileContext.Provider

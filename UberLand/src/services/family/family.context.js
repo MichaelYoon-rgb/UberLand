@@ -28,7 +28,6 @@ export const FamilyContextProvider = ({children}) => {
                     temp.push(value)
                 }
                 setFamily(temp)
-                console.log("run")
                 setFamilyLocationFunc(data)
 
                 setRequesting(false)
@@ -52,14 +51,10 @@ export const FamilyContextProvider = ({children}) => {
 
     const setFamilyLocationFunc = async (data) => {
         let temp = [];
-        console.log(data)
         for (const [key, value] of Object.entries(data)){
             temp.push(allRoutes[value])
         }
-        
         setFamilyLocation(temp)
-
-        console.log("hey",familyLocation)
     }
 
 

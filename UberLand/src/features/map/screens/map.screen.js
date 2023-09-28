@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react"
-import { Dimensions, View, StyleSheet, TouchableWithoutFeedback, AppState, Image, Text } from "react-native"
+import { Dimensions, View, StyleSheet, TouchableWithoutFeedback, AppState, Image, Text, TouchableOpacity } from "react-native"
 
 import MapView, { Marker } from 'react-native-maps'
 import MapViewDirections from "react-native-maps-directions"
 import Constants from 'expo-constants';
-import * as Location from 'expo-location';
+
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { colors } from "../../../../theme"
@@ -17,70 +17,32 @@ import { RoutesContext } from "../../../services/routes/routes.context";
 import { ProfileContext } from "../../../services/profile/profile.context";
 import { FamilyContext } from "../../../services/family/family.context";
 import { LoginContext } from "../../../services/login/login.context";
-
-const calculateDistance = (coord1, coord2) => {
-    lat1 = coord1.latitude
-    lon1 = coord1.longitude
-
-    lat2 = coord2.latitude
-    lon2 = coord2.longitude
-
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in kilometers
-    return distance;
-}
-
-const isThresholdDistance = (coords, location, threshold) => {
-    let closest = Infinity;
-    coords.forEach(coord => {
-        let distance = calculateDistance(coord, location)
-        if (distance < closest){
-            closest = distance
-        }
-    });
-    return closest > threshold
-}
+import { calculateDistance, isThresholdDistance } from "../components/helper.component";
+import { watchLocation } from "../components/helper.component";
 
 export const HomeScreen = ({}) => {
     const {routes, addRoutes, addRoutesDriver, driverRoutes} = useContext(RoutesContext);
+    const {profile, drivers, updateLocation, removeLocation} = useContext(ProfileContext)
     const {familyLocation} = useContext(FamilyContext)
     const {user} = useContext(LoginContext)
 
     const [location, setLocation] = useState(null);
     const [destination, setDestination] = useState(null);
     const [coords, setCoords] = useState(null);
-    const [threshold, setThreshold] = useState(500);
-    const [speedThreshold, setSpeedThreshold] = useState(30);
+    const [showDetails, setShowDetails] = useState(false);
     const [routeAlert, setRouteAlert] = useState(false);
     const [speedAlert, setSpeedAlert] = useState(false);
     const [inputFocus, setInputFocus] = useState(false);
-    const {profile, drivers, updateLocation, removeLocation} = useContext(ProfileContext)
 
     const handleAppStateChange = (nextAppState) => {
         if (nextAppState === 'background') {
-            removeLocation()
-        }
-    };
+            removeLocation(updateLocation)
+    }};
+    
     useEffect(() => {
         setLocationComponent(setLocation);
-        const watchPosition = Location.watchPositionAsync(
-            { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 }, 
-            (loc) => {
-                updateLocation(loc.coords)
-                if (coords) {
-                    setRouteAlert(isThresholdDistance(coords, loc.coords, threshold))
-                    setSpeedAlert(loc.coords.speed > setSpeedThreshold)
-            }}
-        );
+        setLocationComponent(updateLocation);
+        watchLocation(updateLocation)
         
         const appstate = AppState.addEventListener('change', handleAppStateChange);
         return () => appstate.remove
@@ -89,6 +51,7 @@ export const HomeScreen = ({}) => {
     if (!location) return <LoadingComponent/>
     if (routeAlert) return <AlertComponent/>
     if (speedAlert) return <AlertComponent/>
+    
     return (
         <View style={styles.container}>
             <MapView style={styles.mapView}
@@ -102,7 +65,7 @@ export const HomeScreen = ({}) => {
                         origin={driverRoutes.origin}
                         destination={driverRoutes.destination}
                         strokeWidth={4}
-                        strokeColor={colors.tertiary}
+                        strokeColor={"#9db0f5"}
                         onReady={result => {
                             setCoords(result.coordinates)
                         }}
@@ -129,42 +92,75 @@ export const HomeScreen = ({}) => {
                             apikey={Constants.expoConfig.extra.GOOGLE_API_KEY}
                         />
                     ))
-                
                 : null}
                 <Marker coordinate={location}>
-                    <View style={{alignItems: "center", width: 30, height: 30, justifyContent: "center"}}>
-                    <View style={{backgroundColor: colors.tertiary, width: 30, height: 30, borderRadius: 20, position: "absolute", opacity: 0.6}}></View>
+                    <View style={styles.markerContainer}>
+                    <View style={styles.greenMarker}></View>
                     <View style={{backgroundColor: colors.secondary, width: 10, height: 10, borderRadius: 20}}></View>
                     </View>
                 </Marker>
                 {profile.profile == "passenger" ?
                     drivers.map((driver) => (
-                        <Marker key={driver.uid} onPress={() => {addRoutesDriver(driver.uid)}} coordinate={driver.location}>
+                        <Marker key={driver.uid} onPress={() => {setShowDetails(driver.uid)}} coordinate={driver.location}>
                             <Image style={{width: 30, height: 30, tintColor: colors.secondary}} source={require("../../../../assets/icons/steering-wheel.png")}></Image>
                         </Marker>
                     ))
                 : null}
                 {destination ?
                     <Marker coordinate={destination}>
-                    <View style={{alignItems: "center", width: 30, height: 30, justifyContent: "center"}}>
-                    <View style={{backgroundColor: colors.tertiary, width: 30, height: 30, borderRadius: 20, position: "absolute", opacity: 0.6}}></View>
-                    <View style={{backgroundColor: colors.secondary, width: 10, height: 10, borderRadius: 20}}></View>
-                    </View>
-                </Marker> : 
-                null
-                }
+                        <View style={{alignItems: "center", width: 30, height: 30, justifyContent: "center"}}>
+                        <View style={styles.greenMarker}></View>
+                        <View style={styles.blackMarker}></View>
+                        </View>
+                    </Marker> 
+                : null}
+
+                {profile.profile == "driver" && driverRoutes ?
+                    <>
+                        <Marker coordinate={driverRoutes.origin}>
+                            <View style={{alignItems: "center", width: 30, height: 30, justifyContent: "center"}}>
+                            <View style={styles.blueMarker}></View>
+                            <View style={styles.blackMarker}></View>
+                            </View>
+                        </Marker> 
+                        <Marker coordinate={driverRoutes.destination}>
+                            <View style={{alignItems: "center", width: 30, height: 30, justifyContent: "center"}}>
+                            <View style={styles.blueMarker}></View>
+                            <View style={styles.blackMarker}></View>
+                            </View>
+                        </Marker> 
+                    </>
+                : null}
                 
             </MapView>
             {inputFocus ?
                     <TouchableWithoutFeedback onPress={() => setInputFocus(false)}>
-                        <View style={{position: "absolute", width: "100%", height: "100%", backgroundColor: "black", opacity: 0.5, top: 0,zIndex: 2}}/>
+                        <View style={styles.blackOverlay}/>
                     </TouchableWithoutFeedback>
                 : null
             }
             
+            {profile.profile == "passenger" && showDetails != false ? 
+                <View style={styles.detailsContainer}>
+                    <View style={styles.details}>
+                        <Text>Information</Text>
+                        <Text>Number Plate</Text>
+                        <Text>Name</Text>
+                        <TouchableOpacity onPress={() => {setShowDetails(false)}}><Text>Close</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => {if (destination && showDetails) {addRoutesDriver(showDetails); setShowDetails(false)}}}><Text>Book</Text></TouchableOpacity>
+                    </View>
+                </View>
+            : null}
+            
             {profile.profile == "passenger" ?
                 <GooglePlacesAutocomplete
-                    styles={{container: {zIndex: 2}, textInputContainer: {padding: 20}, textInput: {fontFamily: "Poppins_400Regular", borderRadius: 10, paddingTop: 7, marginTop: 10, elevation: 10}, listView: {paddingLeft: 20, paddingRight: 20, borderRadius: 20, overflow: "hidden"}, row: {padding: 10, overflow: "hidden"}, poweredContainer: {display: "none"}}}
+                    styles={{
+                        container: {zIndex: 2},
+                        textInputContainer: {padding: 20},
+                        textInput: styles.googlePlacesInput,
+                        listView: styles.googlePlacesView,
+                        row: {padding: 10, overflow: "hidden"},
+                        poweredContainer: {display: "none"}}}
                     fetchDetails={true}
                     placeholder='Search'
                     onPress={(data, details = null) => {
@@ -200,5 +196,68 @@ const styles = StyleSheet.create({
         position: "absolute",
         width: "100%",
         height: "105%"
+    },
+    markerContainer: {
+        alignItems: "center",
+        width: 30,
+        height: 30,
+        justifyContent: "center"
+    },
+    greenMarker: {
+        backgroundColor: colors.tertiary,
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        position: "absolute",
+        opacity: 0.6
+    },
+    blueMarker: {
+        backgroundColor: "#4b6ad6",
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        position: "absolute",
+        opacity: 0.6
+    },
+    blackMarker: {
+        backgroundColor: colors.secondary,
+        width: 10,
+        height: 10,
+        borderRadius: 20
+    },
+    blackOverlay: {
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "black",
+        opacity: 0.5,
+        top: 0,
+        zIndex: 2
+    },
+    googlePlacesInput: {
+        fontFamily: "Poppins_400Regular",
+        borderRadius: 10,
+        paddingTop: 7,
+        marginTop: 10,
+        elevation: 10
+    },
+    googlePlacesView: {
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderRadius: 20,
+        overflow: "hidden"
+    },
+    googlePlacesAutocomplete: {
+        container: {zIndex: 2},
+        textInputContainer: {padding: 20},
+        textInput: {fontFamily: "Poppins_400Regular", borderRadius: 10, paddingTop: 7, marginTop: 10, elevation: 10},
+        listView: {paddingLeft: 20, paddingRight: 20, borderRadius: 20, overflow: "hidden"},
+        row: {padding: 10, overflow: "hidden"},
+        poweredContainer: {display: "none"}},
+    detailsContainer: {
+        position: "absolute", bottom: 0, width: "100%",
+    },
+    details: {
+        backgroundColor: colors.secondary, marginBottom: 110, marginLeft:18, marginRight: 18, borderRadius: 15, padding: 20
     }
 })

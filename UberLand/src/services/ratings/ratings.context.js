@@ -20,7 +20,6 @@ export const RatingsContextProvider = ({children}) => {
         try {
             onValue(ref(db, '/Ratings'), querySnapShot => {
                 let data = querySnapShot.val() || [];
-                console.log("Ratings: ", data)
                 setRatings(data)
                 setRequesting(false)
             });

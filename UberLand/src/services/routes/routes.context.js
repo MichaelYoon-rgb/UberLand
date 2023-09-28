@@ -23,7 +23,6 @@ export const RoutesContextProvider = ({children}) => {
         try {
             onValue(ref(db, `/Routes/${user.uid}`), querySnapShot => {
                 let data = querySnapShot.val() || {};
-                console.log("Routes: ", data)
                 setRoutes(data)
                 setRequesting(false)
             });
