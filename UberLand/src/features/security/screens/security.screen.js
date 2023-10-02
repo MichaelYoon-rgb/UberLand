@@ -46,7 +46,7 @@ export const SecurityScreen = () => {
       data: data,
       headers: {
         "Content-Type": "multipart/form-data",
-        "authorization":  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOWY4MTgyNzAtZGI1YS00Y2FjLThhZDItMmIyNzBkNjkzYmM3IiwidHlwZSI6ImFwaV90b2tlbiIsIm5hbWUiOiJVYmVyTGFuZCIsImlzX2N1c3RvbSI6dHJ1ZX0.eblhVwxZTqwml2doVXE9csC9RBK9QdShTQ3SHP_PCeQ"},
+        "authorization":  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOWY4MTgyNzAtZGI1YS00Y2FjLThhZDItMmIyNzBkNjkzYmM3IiwidHlwZSI6ImFwaV90b2tlbiIsIm5hbWUiOiJVYmVyTGFuZFJlZ2lvbmFsIiwiaXNfY3VzdG9tIjp0cnVlfQ.FrwH_8bLHgLevJvW_kbiYsTzLoC7nJdEm4sv0ciV_ZI"},
     })
     .then(function (response) {
         console.log("Upload successful:", response);

@@ -3,3 +3,7 @@ export const colors = {
     secondary: "rgb(33, 36, 39)",
     tertiary: "rgb(96,208,134)",
 }
+
+export const familyColors = {
+    blue: "#4b6ad6"
+}

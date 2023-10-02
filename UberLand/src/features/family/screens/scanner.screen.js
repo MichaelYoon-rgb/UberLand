@@ -3,7 +3,7 @@ import { View, Text, Dimensions } from "react-native";
 import { ScannerComponent } from "../components/scanner.component";
 import { FamilyContext } from "../../../services/family/family.context";
 
-export const ScannerScreen = () => {
+export const ScannerScreen = ({navigation}) => {
     const {addFamily} = useContext(FamilyContext)
     
     const onScan = (uid) => {
@@ -12,7 +12,7 @@ export const ScannerScreen = () => {
 
     return (
         <View style={{flex: 1}}>
-            <ScannerComponent onScan={onScan}/>
+            <ScannerComponent onScan={onScan} navigation={navigation}/>
         </View>
     )
 }

@@ -3,11 +3,10 @@ import { View, Text, Dimensions } from "react-native";
 
 import { BarCodeScanner } from "expo-barcode-scanner"
 
-export const ScannerComponent = ({onScan}) => {
+export const ScannerComponent = ({onScan, navigation}) => {
     const [scanned, setScanned] = useState(false);
     const [hasPermission, setHasPermission] = useState(null);
     
-
     useEffect(() => {
         (async () => {
           const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -17,7 +16,8 @@ export const ScannerComponent = ({onScan}) => {
 
     const handleBarCodeScanned = async ({ type, data }) => {
         setScanned(true);
-        onScan(data)
+        onScan(data);
+        navigation.navigate("Family")
     };
 
     return (

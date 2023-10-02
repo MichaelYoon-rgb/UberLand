@@ -1,16 +1,17 @@
 import React, {useContext} from "react"
-import { LoginContext } from "../../../services/login/login.context"
+import { ProfileContext } from "../../../services/profile/profile.context";
 
 import QRCode from "react-qr-code"
 
+
 export const GenerateComponent = () => {
-    const {user} = useContext(LoginContext);
+    const {profile} = useContext(ProfileContext);
 
     return (
         <QRCode
             size={256}
             style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-            value={user.uid}
+            value={profile.family}
             viewBox={`0 0 256 256`}
         />
     )

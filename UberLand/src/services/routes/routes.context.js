@@ -16,6 +16,8 @@ export const RoutesContextProvider = ({children}) => {
     const [routes, setRoutes] = useState({});
     const [allRoutes, setAllRoutes] = useState({});
     const [driverRoutes, setDriverRoutes] = useState({});
+    const [familyRoutes, setFamilyRoutes] = useState({});
+    
     const { user, initializing } = useContext(LoginContext);
     const [requesting, setRequesting] = useState(true);
 
@@ -45,29 +47,43 @@ export const RoutesContextProvider = ({children}) => {
             });
     };
 
-    const addRoutes = async (origin, destination) => {
+    const loadFamilyRoutes = () => {
+        onValue(ref(db, `/Routes/`), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            let temp = {}
+
+            for (const [key, value] of Object.entries(data)) {
+                temp[key] = {origin: value.origin, destination: value.destination}
+            }
+            
+            setFamilyRoutes(temp)
+            setRequesting(false)
+        });
+};
+
+    const addRoutes = async (origin, destination, driverUID) => {
         var route = {
             origin: origin,
             destination: destination,
+            driver: driverUID,
             active: true
         }
-        
+        console.log(route)
         setRoutes(route);
         set(ref(db, '/Routes/' + user.uid), route);
     }
 
     const addRoutesDriver = async (uid) => {
-        console.log("adding driver: ", uid)
         routes.driver = uid;
-        set(ref(db, '/Routes/' + user.uid), routes);
+        set(ref(db, '/Routes/' + user.uid + '/driver'), uid);
     }
 
-    const isDriver = async (uid) => {
-        set(ref(db, '/Routes/' + user.uid), routes);
+    const addRouteCoords = (coords) => {
+        set(ref(db, '/Routes/' + user.uid), {coords});
     }
 
-    const deleteRoutes = (key) => {
-        remove(ref(db, '/Routes/'  + user.uid + "/" + key));
+    const deleteRoute = () => {
+        remove(ref(db, '/Routes/'  + user.uid));
     }
 
     const clearRoutes = () => {
@@ -79,6 +95,7 @@ export const RoutesContextProvider = ({children}) => {
         if (initializing === false && user !== undefined){
             loadRoutes();
             loadDriverRoutes();
+            loadFamilyRoutes();
         }
     }, [initializing, user]);
 
@@ -87,11 +104,13 @@ export const RoutesContextProvider = ({children}) => {
             value={{
                 routes,
                 addRoutes,
-                deleteRoutes,
+                deleteRoute,
                 clearRoutes,
                 addRoutesDriver,
                 driverRoutes,
-                allRoutes
+                familyRoutes,
+                allRoutes,
+                addRouteCoords
             }}>
             {children}
         </RoutesContext.Provider>

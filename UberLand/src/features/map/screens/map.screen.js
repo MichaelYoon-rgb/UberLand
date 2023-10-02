@@ -21,11 +21,10 @@ import { calculateDistance, isThresholdDistance } from "../components/helper.com
 import { watchLocation } from "../components/helper.component";
 
 export const HomeScreen = ({}) => {
-    const {routes, addRoutes, addRoutesDriver, driverRoutes} = useContext(RoutesContext);
-    const {profile, drivers, updateLocation, removeLocation} = useContext(ProfileContext)
-    const {familyLocation} = useContext(FamilyContext)
+    const {routes, addRoutes, addRoutesDriver, driverRoutes, familyRoutes} = useContext(RoutesContext);
+    const {profile, drivers, updateLocation, removeLocation, familyProfiles} = useContext(ProfileContext)
+    const { familyMembers } = useContext(FamilyContext);
     const {user} = useContext(LoginContext)
-
     const [location, setLocation] = useState(null);
     const [destination, setDestination] = useState(null);
     const [coords, setCoords] = useState(null);
@@ -40,14 +39,15 @@ export const HomeScreen = ({}) => {
     }};
     
     useEffect(() => {
-        setLocationComponent(setLocation);
+        console.log("update")
+        setLocationComponent(setLocation)
         setLocationComponent(updateLocation);
         watchLocation(updateLocation)
         
         const appstate = AppState.addEventListener('change', handleAppStateChange);
         return () => appstate.remove
     }, [])
-
+    
     if (!location) return <LoadingComponent/>
     if (routeAlert) return <AlertComponent/>
     if (speedAlert) return <AlertComponent/>
@@ -82,17 +82,30 @@ export const HomeScreen = ({}) => {
                     }}
                     apikey={Constants.expoConfig.extra.GOOGLE_API_KEY}
                 />}
-                {familyLocation[0] != undefined ?
-                    familyLocation.map((location) => (
+                
+                {familyMembers.map((familyMember) => (
+                    <>
+                        {familyProfiles[familyMember] ?
+                        <Marker coordinate={familyProfiles[familyMember].location}>
+                            <View style={styles.markerContainer}>
+                            <View style={styles.blueMarker}></View>
+                            <View style={{backgroundColor: colors.secondary, width: 10, height: 10, borderRadius: 20}}></View>
+                            </View>
+                        </Marker>: null}
+                        {familyRoutes[familyMember] ?
                         <MapViewDirections
-                            origin={location.origin}
-                            destination={location.destination}
+                            origin={familyRoutes[familyMember].origin}
+                            destination={familyRoutes[familyMember].destination}
                             strokeWidth={4}
-                            strokeColor={"rgba(33, 36, 39, 0.4)"}
+                            strokeColor={colors.tertiary}
+                            onReady={result => {
+                                setCoords(result.coordinates)
+                            }}
                             apikey={Constants.expoConfig.extra.GOOGLE_API_KEY}
-                        />
-                    ))
-                : null}
+                        /> : null}
+                    </>
+                ))}
+                
                 <Marker coordinate={location}>
                     <View style={styles.markerContainer}>
                     <View style={styles.greenMarker}></View>
@@ -147,7 +160,15 @@ export const HomeScreen = ({}) => {
                         <Text>Number Plate</Text>
                         <Text>Name</Text>
                         <TouchableOpacity onPress={() => {setShowDetails(false)}}><Text>Close</Text></TouchableOpacity>
-                        <TouchableOpacity onPress={() => {if (destination && showDetails) {addRoutesDriver(showDetails); setShowDetails(false)}}}><Text>Book</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => {
+                            if (destination && showDetails) {
+                                addRoutes(
+                                    {latitude: location.latitude, longitude: location.longitude}, 
+                                    {latitude: destination.latitude, longitude: destination.longitude},
+                                    showDetails
+                                );
+                                setShowDetails(false)
+                            }}}><Text>Book</Text></TouchableOpacity>
                     </View>
                 </View>
             : null}
@@ -167,9 +188,6 @@ export const HomeScreen = ({}) => {
                         let lat = details?.geometry?.location.lat;
                         let lng = details?.geometry?.location.lng
                         setDestination({latitude: lat, longitude: lng})
-                        addRoutes(
-                            {latitude: location.latitude, longitude: location.longitude}, 
-                            {latitude: lat, longitude: lng})
                         setInputFocus(false)
                     }}
                     query={{

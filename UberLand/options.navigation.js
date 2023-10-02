@@ -4,7 +4,7 @@ import { Image, View } from 'react-native';
 import SvgUri from 'react-native-svg-uri';
 const svgIcons = {
   "Map": require('./assets/icons/house-blank.png'),
-  "Family": require('./assets/icons/user.png'),
+  "FamilyNavigator": require('./assets/icons/user.png'),
   "Security": require('./assets/icons/shield.png'),
   "Ratings": require('./assets/icons/star-5.png'),
   "Settings": require('./assets/icons/settings.png'),

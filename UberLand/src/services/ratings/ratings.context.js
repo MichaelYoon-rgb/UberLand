@@ -12,15 +12,19 @@ import { LoginContext } from '../login/login.context';
 export const RatingsContext = createContext();
 
 export const RatingsContextProvider = ({children}) => {
-    const [ ratings, setRatings ] = useState([]);
+    const [ ratings, setRatings ] = useState({});
     const { user, initializing } = useContext(LoginContext);
     const [ requesting, setRequesting ] = useState(true);
     
     const loadRatings = () => {
         try {
             onValue(ref(db, '/Ratings'), querySnapShot => {
-                let data = querySnapShot.val() || [];
-                setRatings(data)
+                let data = querySnapShot.val() || {};
+                let temp = {};
+                for (const [key, value] of Object.entries(data)) {
+                    temp[Object.keys(value)[0]] = value[Object.keys(value)[0]]
+                }
+                setRatings(temp)
                 setRequesting(false)
             });
             
@@ -29,30 +33,40 @@ export const RatingsContextProvider = ({children}) => {
         }
     };
 
-    const addRatings = async ({uid, stars, review}) => {
+    const addRatings = async (driverUID, title, subtitle) => {
         var obj = {
-            stars: stars,
-            review: review
+            passengerUID: user.uid,
+            driverUID,
+            title,
+            subtitle,
         }
 
-        setRatings([
-            ...ratings,
-            obj,
-        ]);
-        
-        push(ref(db, '/Ratings/' + uid), obj);
+
+        const options = {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+              'content-type': 'application/json',
+              authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOWY4MTgyNzAtZGI1YS00Y2FjLThhZDItMmIyNzBkNjkzYmM3IiwidHlwZSI6ImFwaV90b2tlbiIsIm5hbWUiOiJVYmVyTGFuZFJlZ2lvbmFsIiwiaXNfY3VzdG9tIjp0cnVlfQ.FrwH_8bLHgLevJvW_kbiYsTzLoC7nJdEm4sv0ciV_ZI'
+            },
+            body: JSON.stringify({
+              response_as_dict: true,
+              attributes_as_list: false,
+              show_original_response: false,
+              providers: 'google',
+              text: title+subtitle
+            })
+        };
+          
+        fetch('https://api.edenai.run/v2/text/sentiment_analysis', options)
+            .then(response => response.json())
+            .then(response => {
+                obj.sentiment = response.google.general_sentiment_rate
+                push(ref(db, '/Ratings/' + driverUID), obj);
+            })
+            .catch(err => console.error(err));
     }
-
-    const deleteRatings = (key) => {
-        // WARNING: PAY ATTENTION TO user.uid or uid
-        remove(ref(db, '/Ratings/'  + user.uid + "/" + key));
-    }
-
-    const clearRatings = () => {
-        setRatings([]);
-        remove(ref(db, '/Ratings/'  + user.uid));
-    };
-
+    
     useEffect(() => {
         if (initializing === false && user !== undefined){
             loadRatings();
@@ -63,9 +77,7 @@ export const RatingsContextProvider = ({children}) => {
         <RatingsContext.Provider
             value={{
                 ratings,
-                addRatings,
-                deleteRatings,
-                clearRatings
+                addRatings
             }}>
             {children}
         </RatingsContext.Provider>

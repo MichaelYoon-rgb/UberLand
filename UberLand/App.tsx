@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, StatusBar } from "react-native";
 
 import { NavigationContainer } from "@react-navigation/native"
@@ -26,33 +26,48 @@ import { FamilyScreen } from "./src/features/family/screens/family.screen";
 import { FamilyNavigator } from "./src/features/family/family.navigator";
 import { RoutesContextProvider } from "./src/services/routes/routes.context";
 import { FamilyContextProvider } from "./src/services/family/family.context";
+import { SecurityScreen as SecurityScreenLogin } from "./src/features/login/screens/security.screen";
 import { SecurityScreen } from "./src/features/security/screens/security.screen";
 import { RatingsContextProvider } from "./src/services/ratings/ratings.context";
 import { RatingScreen } from "./src/features/ratings/screens/ratings.screen";
-import { ProfileContextProvider } from "./src/services/profile/profile.context";
+import { ProfileContext, ProfileContextProvider } from "./src/services/profile/profile.context";
 import { ProfileScreen } from "./src/features/login/screens/profile.screen";
+import { PassengerScreen } from "./src/features/map/screens/passenger.screen";
+import { DriverScreen } from "./src/features/map/screens/driver.screen";
+import { LogBox } from 'react-native';
 
+
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+
 const HomeStack = () => {
+  const { profile } = useContext(ProfileContext);
+
   return (
     <Tab.Navigator screenOptions={screenOptions}>
+      
       <Tab.Screen
           name="Map"
           options={option}
-          component={HomeScreen}/> 
-      
+          component={profile.profile == "driver" ? DriverScreen : PassengerScreen}/>
+
       <Tab.Screen
-          name="Family"
+          name="FamilyNavigator"
           options={option}
           component={FamilyNavigator}/> 
-      
-      <Tab.Screen
-          name="Security"
-          options={option}
-          component={SecurityScreen}/> 
 
+      <Tab.Screen
+          name="Ratings"
+          options={option}
+          component={RatingScreen}/>
+
+      <Tab.Screen
+          name="Settings"
+          options={option}
+          component={SettingsScreen}/>
     </Tab.Navigator>
   );
 }
@@ -96,6 +111,11 @@ const App = () => {
                       name="Home"
                       options={option}
                       component={HomeStack}/>
+
+                    <Stack.Screen
+                      name="Security"
+                      options={option}
+                      component={SecurityScreenLogin}/>
                   </Stack.Navigator>
                 </NavigationContainer>
               </FamilyContextProvider>

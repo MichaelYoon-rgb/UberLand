@@ -19,6 +19,7 @@ export const LoginContextProvider = ({ children }) => {
   const signOutFunc = async () => {
     await signOut(auth).then(() => console.log("User signed out!"));
   };
+  
   const emailAndPasswordSignIn = async (email, password) => {
     return await signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -73,6 +74,7 @@ export const LoginContextProvider = ({ children }) => {
         console.error(error);
       });
   };
+  
 
   // Handle user state changes
 

@@ -21,6 +21,36 @@ export const calculateDistance = (coord1, coord2) => {
     return distance;
 }
 
+export const calculateDistancePercentage = (coords, location) => {
+    const lat = location.latitude
+    const lng = location.longitude
+
+    const totalDistance = coords.reduce((acc, curr, index) => {
+      if (index > 0) {
+        const prevCoord = coords[index - 1];
+        const distance = calculateDistance(
+          prevCoord.latitude,
+          prevCoord.longitude,
+          curr.latitude,
+          curr.longitude
+        );
+        return acc + distance;
+      }
+      return acc;
+    }, 0);
+  
+    const customerDistance = calculateDistance(
+      coords[0].latitude,
+      coords[0].longitude,
+      lat,
+      lng
+    );
+  
+    const percentage = (customerDistance / totalDistance) * 100;
+    return percentage;
+}
+
+  
 export const isThresholdDistance = (coords, location, threshold) => {
     let closest = Infinity;
     coords.forEach(coord => {
@@ -34,8 +64,9 @@ export const isThresholdDistance = (coords, location, threshold) => {
 
 export const watchLocation = (updateLocation) => {
     Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 }, 
+        { accuracy: Location.Accuracy.Balanced, timeInterval: 10000, distanceInterval: 10 }, 
         (loc) => {
+
             updateLocation(loc.coords)
             // setRouteAlert(isThresholdDistance(coords, loc.coords, threshold))
             // setSpeedAlert(loc.coords.speed > setSpeedThreshold)
